@@ -1,15 +1,18 @@
 let canvas = document.getElementById("snake"); //criar elemento que irá rodar o jogo
 let context = canvas.getContext("2d"); //....
 let box = 32;
+canvas.width = 16 * box;
+canvas.height = 16 * box;
 let snake = []; //criar cobrinha como lista, já que ela vai ser uma série de coordenadas, que quando pintadas, criam os quadradinhos
 snake[0] = {
   x: 8 * box,
   y: 8 * box,
 };
 let direction = "right";
+let lastDirection = direction;
 let food = {
-  x: Math.floor(Math.random() * 15 + 1) * box,
-  y: Math.floor(Math.random() * 15 + 1) * box,
+  x: Math.floor(Math.random() * 16) * box,
+  y: Math.floor(Math.random() * 16) * box,
 };
 
 function criarBG() {
@@ -25,7 +28,7 @@ function criarCobrinha() {
 }
 
 function drawFood() {
-  context.fillStyle = "red";
+  context.fillStyle = "orange";
   context.fillRect(food.x, food.y, box, box);
 }
 
@@ -33,10 +36,10 @@ function drawFood() {
 document.addEventListener("keydown", update);
 
 function update(event) {
-  if (event.keyCode == 37 && direction != "right") direction = "left";
-  if (event.keyCode == 38 && direction != "down") direction = "up";
-  if (event.keyCode == 39 && direction != "left") direction = "right";
-  if (event.keyCode == 40 && direction != "up") direction = "down";
+  if ((event.keyCode == 65 || event.keyCode == 37) && lastDirection != "right") direction = "left";
+  if ((event.keyCode == 87 || event.keyCode == 38) && lastDirection != "down") direction = "up";
+  if ((event.keyCode == 68 || event.keyCode == 39) && lastDirection != "left") direction = "right";
+  if ((event.keyCode == 83 || event.keyCode == 40) && lastDirection != "up") direction = "down";
 }
 
 function iniciarJogo() {
@@ -64,11 +67,11 @@ function iniciarJogo() {
   if (direction == "up") snakeY -= box;
   if (direction == "down") snakeY += box;
 
-  if (snakeX != food.x || snakeY != food.y) {
-    snake.pop(); //pop tira o último elemento da lista
+  if (snakeX == food.x && snakeY == food.y) {
+    food.x = Math.floor(Math.random() * 16) * box;
+    food.y = Math.floor(Math.random() * 16) * box;
   } else {
-    food.x = Math.floor(Math.random() * 15 + 1) * box;
-    food.y = Math.floor(Math.random() * 15 + 1) * box;
+    snake.pop();
   }
 
   let newHead = {
@@ -77,6 +80,7 @@ function iniciarJogo() {
   };
 
   snake.unshift(newHead); //método unshift adiciona como primeiro quadradinho da cobrinha
+  lastDirection = direction;
 }
 
 let jogo = setInterval(iniciarJogo, 100);
